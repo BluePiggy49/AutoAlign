@@ -31,7 +31,10 @@ Twist *twist;
 Solenoid *light;
 
 int mode = 1;
-int pig = 1;
+bool pig = 0;
+bool pigpig = 0;
+bool dog = 0;
+bool dogdog = 0;
 
 void Robot::RobotInit() {
 	/*drive_talon_left_noenc = new TalonSRX(1);
@@ -63,11 +66,11 @@ void Robot::RobotInit() {
 
 	navx = new AHRS(SPI::Port::kMXP);
 
-	light = new Solenoid(0);
+	light = new Solenoid(1);
 
 	twist = new Twist(drive_talon_left_enc, drive_talon_right_enc, pid, navx, client, joystick_zero);
 
-	std::cout<<"Twist v. 55"<<std::endl;
+	std::cout<<"Twist v. 56"<<std::endl;
 }
 
 void Robot::RobotPeriodic() {}
@@ -120,9 +123,12 @@ void Robot::AutonomousPeriodic() {
 	std::cout<<"Angle One: "<<client->math(1)<<std::endl;
 	std::cout<<"Distance: "<<client->math(2)<<std::endl;
 	std::cout<<"Angle Two: "<<client->math(3)<<std::endl;
+	std::cout<<"Math 4: "<<client->math(4)<<std::endl;
 	//std::cout<<"Angle One with Filter: "<<client->median_filter(1)<<std::endl;
 	//std::cout<<"Distance with Filter: "<<client->median_filter(2)<<std::endl;
 	//std::cout<<"Angle Two with Filter: "<<client->median_filter(3)<<std::endl;
+//	std::cout<<"Left: "<<drive_talon_left_enc->GetSelectedSensorPosition(0)<<std::endl;
+//	std::cout<<"Right: "<<drive_talon_right_enc->GetSelectedSensorPosition(0)<<std::endl;
 	std::cout<<"Yaw: "<<navx->GetYaw()<<std::endl;
 
 }
@@ -130,13 +136,55 @@ void Robot::AutonomousPeriodic() {
 void Robot::TeleopInit() {
 	navx->ZeroYaw();
 	//angle_bot_turns_begin_from_jetson = -15;
-	twist->mode = 0;
+	//twist->mode = 0;
+	std::cout<<"Mode: "<<mode<<std::endl;
 }
 
 void Robot::TeleopPeriodic() {
 	light->Set(1);
-	twist->auto_align();
-	std::cout<<twist->mode<<std::endl;
+	/*bool button = joystick_zero->GetRawButton(1);
+	if (button == 1 && pigpig == 0 && pig == 0)
+	{
+		pigpig = 1;
+		std::cout<<"I'm Here in Teleop"<<std::endl;
+	}
+	if (pigpig == 1 && joystick_zero->GetRawButton(1) == 0)
+	{
+		pig = 1;
+		pigpig = 0;
+		twist->mode = 1;
+		std::cout<<"Now I'm here in teleop"<<std::endl;
+	}
+	if (pig == 1 && pigpig == 0)
+	{
+		twist->auto_align();
+		//twist->mode++;
+		std::cout<<"I'm aligning now"<<std::endl;
+		if (twist->mode == 7)
+		{
+			pig = 0;
+			pigpig = 0;
+			std::cout<<"Reset"<<std::endl;
+			twist->mode = 0;
+		}
+	}*/
+	/*if (button == 0 && pigpig == 0 && pig == 0)
+	{
+		std::cout<<"DRIVEBASE CAN RUN HERE"<<std::endl;
+	}*/
+	//twist->auto_align();
+	//float distance = client->math(2);
+	//float angle_one = client->math(1);
+	//float angle_two = client->math(3);
+	//std::cout<<"Twist Mode: "<<twist->mode<<std::endl;
+	//std::cout<<"Angle One: "<<angle_one<<std::endl;
+	//std::cout<<"Distance: "<<distance<<std::endl;
+	//std::cout<<"Angle Two: "<<angle_two<<std::endl;
+	//std::cout<<"Final Angle: "<<client->math(4)<<std::endl;
+	//std::cout<<"Yaw: "<<navx->GetYaw()<<std::endl;
+	//std::cout<<"Pigpig: "<<pigpig<<std::endl;
+	//std::cout<<"Pig: "<<pig<<std::endl;
+	//std::cout<<"Button: "<<button<<std::endl;
 	std::cout<<client->update()<<std::endl;
 }
 

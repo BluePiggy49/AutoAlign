@@ -2,6 +2,7 @@
 #define RADIANSTODEGREES 180/PI
 #define DEGREESTORADIANS PI/180
 #include <socket.h>
+//#include <ioctl.h>
 
 std::string Socket::update(){
 	if (mode == 1)
@@ -30,6 +31,7 @@ std::string Socket::update(){
 		connect_mode ++;
 		flags = fcntl(connect_socket, F_GETFL);	
 		fcntl(connect_socket, F_SETFL, flags | O_NONBLOCK);
+		//flags = ioctl(my_socket, FIONBIO);
 		int reading = recv(my_socket, buffer, 256, 0);
 		//std::cout<<"Reading: "<<reading<<std::endl;
 		if (reading > 0)
@@ -170,7 +172,7 @@ float Socket::distance_from_center(std::string buffer_string){
 	float angle_float = atof(angle_string.c_str());
 
 	//std::cout<<"Angle Float: "<<angle_float<<std::endl;
-
+	//buffer_string = "";
 	return angle_float;
 }
 
@@ -182,7 +184,8 @@ float Socket::left_depth(std::string buffer_string){
 	std::string right_string = "";
 
 	std::size_t find_left_begin = buffer_string.find(left);
-	std::size_t find_left_end = buffer_string.find_last_of(left);
+	std::size_t find_left_length = left.find_last_of(left);
+	std::size_t find_left_end = find_left_begin + find_left_length;
 	std::size_t find_left_number_start = find_left_end + 2;
 
 	std::size_t find_right_begin = buffer_string.find(right);
@@ -193,12 +196,13 @@ float Socket::left_depth(std::string buffer_string){
 		char current_left_char = buffer_string[current_left_char_num];
 		std::string current_left_string(1, current_left_char);
 		left_string = left_string + current_left_char;
+		//std::cout<<"left_string: "<<left_string<<std::endl;
 	}
 	
 	float left_float = atof(left_string.c_str());
 
 	//std::cout<<"Left Depth Float: "<<left_float<<std::endl;
-
+	//buffer_string = "";
 	return left_float;
 }
 
@@ -208,7 +212,8 @@ float Socket::right_depth(std::string buffer_string){
 	std::string right_string = "";
 
 	std::size_t find_right_begin = buffer_string.find(right);
-	std::size_t find_right_end = buffer_string.find_last_of(right);
+	std::size_t find_right_length = right.find_last_of(right);
+	std::size_t find_right_end = find_right_begin + find_right_length;
 	std::size_t find_right_number_start = find_right_end + 2;
 
 	std::size_t find_right_number_end = buffer_string.find_last_of(buffer_string);
@@ -217,12 +222,13 @@ float Socket::right_depth(std::string buffer_string){
 		char current_right_char = buffer_string[current_right_char_num];
 		std::string current_right_string(1, current_right_char);
 		right_string = right_string + current_right_char;
+	//	std::cout<<"right_string: "<<right_string<<std::endl;
 	}
 
 	float right_float = atof(right_string.c_str());
 
 	//std::cout<<"Right Depth Float: "<<right_float<<std::endl;
-
+	//buffer_string = "";
 	return right_float;
 }
 
@@ -239,8 +245,8 @@ float Socket::math(int version){
 			{
 				return 0;
 			}
-			//std::cout<<"Distance from Center: "<<RealTapePairDistanceFromCenter<<std::endl;
-			int ControlPointDistanceFromVisionTarget = 1000;
+			//std::cout<<"Distance from Center: "<<VisionTargetDistanceFromCenter<<std::endl;
+			//int ControlPointDistanceFromVisionTarget = 1000;
 			float DepthDifference = (RightDepth - LeftDepth);
 			float CenterDepth = abs(LeftDepth + RightDepth) / 2; 
 			float VisionTargetLength = 430;
@@ -272,6 +278,9 @@ float Socket::math(int version){
 			FirstAngleToMove = RADIANSTODEGREES * atan(CameraXDistanceFromControlPoint/CameraYDistanceFromControlPoint);
 			DistanceToMove = sqrt(pow(CameraXDistanceFromControlPoint, 2) + pow(CameraYDistanceFromControlPoint, 2));
 			SecondAngleToMove = -1 * (FirstAngleToMove + VisionTargetSlope);
+			//std::cout<<"VisionTargetDistanceFromCenter: "<<VisionTargetDistanceFromCenter<<std::endl;
+			//std::cout<<"CenterDepth: "<<CenterDepth<<std::endl;
+			//std::cout<<"Atan Calculation: "<<(VisionTargetDistanceFromCenter / CenterDepth)<<std::endl;
 
 			if (version == 1){
 				//std::cout<<"FirstAngleToMove: "<<FirstAngleToMove<<std::endl;
@@ -282,6 +291,10 @@ float Socket::math(int version){
 			}
 			if (version == 3){
 				return SecondAngleToMove;
+			}
+			if (version == 4)
+			{
+				return (atan(VisionTargetDistanceFromCenter / CenterDepth) * RADIANSTODEGREES);
 			}
 		}else{
 			return 0;

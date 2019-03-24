@@ -1,6 +1,4 @@
 See file:///home/bluepiggy49/TwistAlign/build/tmp/compileFrcUserProgramReleaseExecutableFrcUserProgramCpp/output.txt for all output for compileFrcUserProgramReleaseExecutableFrcUserProgramCpp.
-compiling twist.cpp successful.
-
-compiling Robot.cpp successful.
+compiling socket.cpp successful.
 
 Finished compileFrcUserProgramReleaseExecutableFrcUserProgramCpp, see full log file:///home/bluepiggy49/TwistAlign/build/tmp/compileFrcUserProgramReleaseExecutableFrcUserProgramCpp/output.txt.

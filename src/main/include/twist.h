@@ -12,6 +12,7 @@
 #include <AHRS.h>
 #include <socket.h>
 #include <string>
+#include <cmath>
 
 class Twist {
 	public:
@@ -21,9 +22,10 @@ class Twist {
 			
 			int auto_align();
 			void wipe();
-			void begin_turn(int direction);
+			void begin_turn(int direction_begin);
 			void straight_away();
-			void end_turn(int direction);
+			void end_turn(int direction_turnend);
+			void final_turn_go(int direction_turnend);
 			int mode = 0;
 			float angle_bot_turns_begin_from_jetson;
 			float angle_bot_turns_end_from_jetson;
@@ -31,6 +33,7 @@ class Twist {
 			float to_travel_distance_in_from_jetson;
 			float left_depth_from_jetson;
 			float right_depth_from_jetson;
+
 
 	private:
 		TalonSRX *talon_right, *talon_left;
@@ -51,6 +54,7 @@ class Twist {
 		 //angle bot should turn after it travels (from Jetson)
 		float left_position_enc;
 		float right_position_enc;
+
 		 //(from Jetson)
 		 //(from Jetson)
 		float speed_ratio;
@@ -63,6 +67,7 @@ class Twist {
 		bool align_state = 0;
 		int auto_align_mode = 0;
 		int direction;
+		int direction_to_turn;
 		int direction_end;
 
 		float thirty_speed = 150; //30% percent output velocity
@@ -73,12 +78,18 @@ class Twist {
 		float begin_yaw;
 
 		//Possiblility for turning Speed Control
-		float max_turn_velocity = 125.0;
-		float min_turn_velocity = 115.0;
+		float max_turn_velocity = 200.0;
+		float min_turn_velocity = 175.0;
 		float max_angle = 18.0; //Where it will start slowing
-		float min_angle = 1.0; //Where we will stop
+		float min_angle = 3.0; //Where we will stop
 		float change_angle = 5 - min_angle;
 		float change_velocity = max_turn_velocity - min_turn_velocity;
 		float velocity_constant = change_velocity / change_angle;
+		float d_constant = 123;
+		float old_angle;
+		float new_angle;
+		float old_change_in_angle = 0;
+		float new_change_in_angle = 0;
+		float change_in_change = 0;
 };
 #endif

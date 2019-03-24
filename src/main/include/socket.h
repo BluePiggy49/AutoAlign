@@ -31,6 +31,7 @@ class Socket {
 		float distance(std::string buffer_string);
 		float angle_two(std::string buffer_string);
 		float median_filter(int math_version);
+		//float new_math();
 
 	private:
 		//update():
@@ -52,7 +53,7 @@ class Socket {
 		float SecondAngleToMove;
 		float ControlPointDistanceFromCenter;
 		float RealTapePairDistanceFromCenter;
-		float ControlPointDistanceFromVisionTarget = 300;
+		float ControlPointDistanceFromVisionTarget = 500;
 
 		//median()
 		int median_level = 1;

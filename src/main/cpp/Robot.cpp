@@ -28,13 +28,14 @@ PID *pid;
 Socket *client;
 AHRS *navx;
 Twist *twist;
-Solenoid *light;
+//Solenoid *light;
 
 int mode = 1;
 bool pig = 0;
 bool pigpig = 0;
 bool dog = 0;
 bool dogdog = 0;
+int loop = 0;
 
 void Robot::RobotInit() {
 	/*drive_talon_left_noenc = new TalonSRX(1);
@@ -66,7 +67,7 @@ void Robot::RobotInit() {
 
 	navx = new AHRS(SPI::Port::kMXP);
 
-	light = new Solenoid(1);
+	//light = new Solenoid(1);
 
 	twist = new Twist(drive_talon_left_enc, drive_talon_right_enc, pid, navx, client, joystick_zero);
 
@@ -118,7 +119,7 @@ void Robot::AutonomousPeriodic() {
 	}
 	drive_talon_left_enc->Set(ControlMode::PercentOutput, 0.5 * (1 * joystick_zero->GetRawAxis(4) + (-1 * joystick_zero->GetRawAxis(1))));
 	drive_talon_right_enc->Set(ControlMode::PercentOutput, 0.5 * (1 * joystick_zero->GetRawAxis(4) + (1 * joystick_zero->GetRawAxis(1))));
-	light->Set(1);
+	//light->Set(1);
 	std::cout<<client->update()<<std::endl;
 	std::cout<<"Angle One: "<<client->math(1)<<std::endl;
 	std::cout<<"Distance: "<<client->math(2)<<std::endl;
@@ -141,8 +142,8 @@ void Robot::TeleopInit() {
 }
 
 void Robot::TeleopPeriodic() {
-	light->Set(1);
-	/*bool button = joystick_zero->GetRawButton(1);
+	//light->Set(1);
+	bool button = joystick_zero->GetRawButton(1);
 	if (button == 1 && pigpig == 0 && pig == 0)
 	{
 		pigpig = 1;
@@ -157,21 +158,23 @@ void Robot::TeleopPeriodic() {
 	}
 	if (pig == 1 && pigpig == 0)
 	{
-		twist->auto_align();
+		//twist->auto_align();
+		std::cout<<client->update()<<std::endl;
 		//twist->mode++;
 		std::cout<<"I'm aligning now"<<std::endl;
-		if (twist->mode == 7)
+		bool button_2 = joystick_zero->GetRawButton(2);
+		if (/*twist->mode == 7 || */button_2 == 1)
 		{
 			pig = 0;
 			pigpig = 0;
 			std::cout<<"Reset"<<std::endl;
 			twist->mode = 0;
 		}
-	}*/
-	/*if (button == 0 && pigpig == 0 && pig == 0)
+	}
+	if (button == 0 && pigpig == 0 && pig == 0)
 	{
 		std::cout<<"DRIVEBASE CAN RUN HERE"<<std::endl;
-	}*/
+	}
 	//twist->auto_align();
 	//float distance = client->math(2);
 	//float angle_one = client->math(1);
@@ -185,7 +188,9 @@ void Robot::TeleopPeriodic() {
 	//std::cout<<"Pigpig: "<<pigpig<<std::endl;
 	//std::cout<<"Pig: "<<pig<<std::endl;
 	//std::cout<<"Button: "<<button<<std::endl;
-	std::cout<<client->update()<<std::endl;
+	//std::cout<<client->update()<<std::endl;
+	loop++;
+	std::cout<<loop<<std::endl;
 }
 
 void Robot::TestPeriodic() {}

@@ -31,6 +31,7 @@ class Socket {
 		float distance(std::string buffer_string);
 		float angle_two(std::string buffer_string);
 		float median_filter(int math_version);
+		int reading;
 		//float new_math();
 
 	private:

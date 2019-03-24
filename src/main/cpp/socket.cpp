@@ -4,58 +4,82 @@
 #include <socket.h>
 //#include <ioctl.h>
 
-std::string Socket::update(){
-	if (mode == 1)
+std::string Socket::update() {
+  std::string angle = "A";
+  std::string left = "L";
+  std::string right = "R";
+  if (mode == 1)
 	{
 		//std::cout<<"I am at line 55"<<std::endl;
 		my_socket = socket(AF_INET, SOCK_STREAM, 0);
 		memset(&serv_addr, '0', sizeof(serv_addr));
+		memset(&my_address, '0', sizeof(my_address));
 		my_address.sin_family = AF_INET;
-		my_address.sin_addr.s_addr = inet_addr("10.9.55.6");
-		my_address.sin_port = htons(5800);
-		this->my_socket = my_socket;
+		my_address.sin_addr.s_addr = inet_addr("10.9.55.193");
+		my_address.sin_port = htons(5060);
+		//my_socket = my_socket;
 		if (my_socket < 0){
 			std::cout<<"Failed to Start"<<std::endl;
 			return "0";
+		}else{
+			mode ++;
+			//connect_mode++;
 		}
-		mode ++;
 	}
+
 	connect_socket = connect(my_socket, (struct sockaddr *)&my_address, sizeof(my_address));
 	///std::cout<<"Connect Socket: "<<connect_socket<<std::endl;
 	if (connect_socket < 0 && connect_mode == 1) {
 		std::cout<<"Could Not Connect"<<std::endl;
 		connect_mode = 1;
-		mode = 1;
+		//mode = 1;
+		//return "Could Not Connect dangit";
 		return "0";
 	}else{
 		connect_mode ++;
-		flags = fcntl(connect_socket, F_GETFL);	
-		fcntl(connect_socket, F_SETFL, flags | O_NONBLOCK);
+		flags = fcntl(my_socket, F_GETFL);
+		fcntl(my_socket, F_SETFL, flags | O_NONBLOCK);
+		//std::cout<<"Flags: "<<flags<<std::endl;
 		//flags = ioctl(my_socket, FIONBIO);
-		int reading = recv(my_socket, buffer, 256, 0);
-		//std::cout<<"Reading: "<<reading<<std::endl;
+		bzero(buffer, sizeof(buffer));
+		int reading = read(my_socket, buffer, 100);
+		//std::cout<<"Size of Buffer: "<<sizeof(buffer)<<std::endl;
+		//std::cout<<"What is reading? "<<reading<<std::endl;
 		if (reading > 0)
 		{
-		 	//std::cout<<"What it Read: "<<buffer<<std::endl;
-			loop ++;
-			//std::cout<<"Loop: "<<loop<<std::endl;
 			buffer_string = "";
-			for (std::size_t char_buffer_place = 0; char_buffer_place < sizeof(buffer); ++char_buffer_place)
+			for (std::size_t char_buffer_place = 0; char_buffer_place < reading; char_buffer_place++)
 			{
 				char current_buffer_char = buffer[char_buffer_place];
 				std::string current_buffer_string(1, current_buffer_char);
 				buffer_string = buffer_string + current_buffer_char;
+				//std::cout<<"Buffer String: "<<buffer_string<<std::endl;
+				//std::cout<<"Here"<<std::endl;
+				//std::string search_string = buffer_string;
 			}
+		//	std::cout<<"Angle Location: "<<buffer_string.find(angle)<<std::endl;
+		//	std::cout<<"Left Location: "<<buffer_string.find(left)<<std::endl;
+		//	std::cout<<"Right Location: "<<buffer_string.find(right)<<std::endl;
+		if (buffer_string.find(angle) == 0 && buffer_string.find(left) >= 0 && buffer_string.find(right) >= 0)
+		{
+			//std::cout<<"Gonna print it out"<<std::endl;
+			//std::cout<<"This is the buffer_string: "<<buffer_string<<std::endl;
 			return buffer_string;
+		}
+			//std::cout<<"raw buffer: "<<buffer<<std::endl;
+			
 		}else {
 			std::cout<<"Not Receiving Message"<<std::endl;
-			connect_mode = 1;
-			mode = 1;
+			//connect_mode = 1;
+			//mode = 1;
+			//return "Reading " + std::to_string(reading) + " buffer is here " + buffer;
 			return "0";
 		}
 	}
-
-	//std::cout<<"Buffer String: "<<buffer_string<<std::endl;
+	//connect_socket = -1;
+	//return "Connect mode " + std::to_string(connect_mode) + " mode " + std::to_string(mode) + " Bytes read " + std::to_string(reading) + " This is the buffer " + buffer;
+	//std::cout<<"Loop: "<<loop<<std::endl;
+	loop++;
 }
 
 /*float Socket::angle_one(std::string buffer_string){

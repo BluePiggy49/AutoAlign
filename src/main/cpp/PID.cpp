@@ -14,14 +14,14 @@ void PID::PID_drivebase30 (){
 
 	//Comp
 
-	talon_right_enc->Config_kP(4,0,10);
+	talon_right_enc->Config_kP(0,4,10);
 	talon_right_enc->Config_kI(0,0,10);
 	talon_right_enc->Config_kD(0,0,10);
-	talon_right_enc->Config_kF(1.6 ,0,10);
-	talon_left_enc->Config_kP(4,0,10);
+	talon_right_enc->Config_kF(0,1.6,10);
+	talon_left_enc->Config_kP(,4,10);
 	talon_left_enc->Config_kI(0,0,10);
 	talon_left_enc->Config_kD(0,0,10);
-	talon_left_enc->Config_kF(1.6 ,0,10);
+	talon_left_enc->Config_kF(0,1.6,10);
 }
 
 //Configs drivebase 10% of velocity

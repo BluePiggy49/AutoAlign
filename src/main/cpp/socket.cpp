@@ -27,9 +27,12 @@ std::string Socket::update() {
 		}
 	}
 
-	connect_socket = connect(my_socket, (struct sockaddr *)&my_address, sizeof(my_address));
+	
 	///std::cout<<"Connect Socket: "<<connect_socket<<std::endl;
 	if (connect_socket < 0 && connect_mode == 1) {
+		connect_socket = connect(my_socket, (struct sockaddr *)&my_address, sizeof(my_address));
+		flags = fcntl(my_socket, F_GETFL);
+		fcntl(my_socket, F_SETFL, flags | O_NONBLOCK);
 		std::cout<<"Could Not Connect"<<std::endl;
 		connect_mode = 1;
 		//mode = 1;
@@ -37,8 +40,7 @@ std::string Socket::update() {
 		return "0";
 	}else{
 		connect_mode ++;
-		flags = fcntl(my_socket, F_GETFL);
-		fcntl(my_socket, F_SETFL, flags | O_NONBLOCK);
+		
 		//std::cout<<"Flags: "<<flags<<std::endl;
 		//flags = ioctl(my_socket, FIONBIO);
 		bzero(buffer, sizeof(buffer));

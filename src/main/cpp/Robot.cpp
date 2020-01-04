@@ -22,7 +22,7 @@
 using namespace frc;
 //using namespace std::chrono;
 
-TalonSRX *drive_talon_right_noenc, *drive_talon_right_enc, *drive_talon_left_enc, *drive_talon_left_noenc, *claw_pivot_talon_enc, *elevator_talon_enc, *seat_motor_talon_enc, *intake_wheels_talon_noenc;
+TalonSRX *drive_talon_right_noenc, *drive_talon_right_enc, *drive_talon_left_enc, *drive_talon_left_noenc, *claw_pivot_talon_enc, *elevator_talon_enc, *seat_motor_talon_enc, *intake_wheels_talon_noenc, *climber;
 Joystick *joystick_zero, *joystick_one;
 PID *pid;
 Socket *client;
@@ -54,6 +54,7 @@ void Robot::RobotInit() {
 	elevator_talon_enc = new TalonSRX(8);
 	seat_motor_talon_enc = new TalonSRX(10);
 	intake_wheels_talon_noenc = new TalonSRX(9);
+	climber = new TalonSRX(6);
 
 	joystick_zero = new Joystick(0);
 	joystick_one = new Joystick(1);
@@ -87,13 +88,13 @@ void Robot::AutonomousPeriodic() {
 	//std::cout<<navx->GetYaw()<<std::endl;
 	if (joystick_zero->GetRawButton(1))
 	{
-		claw_pivot_talon_enc->Set(ControlMode::PercentOutput, -0.3);
+		climber->Set(ControlMode::PercentOutput, -0.3);
 	}else if (joystick_zero->GetRawButton(2))
 	{
-		claw_pivot_talon_enc->Set(ControlMode::PercentOutput, 0.3);
+		climber->Set(ControlMode::PercentOutput, 0.3);
 	}
 	else{
-		claw_pivot_talon_enc->Set(ControlMode::PercentOutput, 0);
+		climber->Set(ControlMode::PercentOutput, 0);
 	}
 	
 	if (joystick_zero->GetRawButton(3))
@@ -120,17 +121,18 @@ void Robot::AutonomousPeriodic() {
 	drive_talon_left_enc->Set(ControlMode::PercentOutput, 0.5 * (1 * joystick_zero->GetRawAxis(4) + (-1 * joystick_zero->GetRawAxis(1))));
 	drive_talon_right_enc->Set(ControlMode::PercentOutput, 0.5 * (1 * joystick_zero->GetRawAxis(4) + (1 * joystick_zero->GetRawAxis(1))));
 	//light->Set(1);
-	std::cout<<client->update()<<std::endl;
-	std::cout<<"Angle One: "<<client->math(1)<<std::endl;
-	std::cout<<"Distance: "<<client->math(2)<<std::endl;
-	std::cout<<"Angle Two: "<<client->math(3)<<std::endl;
-	std::cout<<"Math 4: "<<client->math(4)<<std::endl;
+	//std::cout<<client->update()<<std::endl;
+//	std::cout<<"Angle One: "<<client->math(1)<<std::endl;
+//	std::cout<<"Distance: "<<client->math(2)<<std::endl;
+//	std::cout<<"Angle Two: "<<client->math(3)<<std::endl;
+//	std::cout<<"Math 4: "<<client->math(4)<<std::endl;
 	//std::cout<<"Angle One with Filter: "<<client->median_filter(1)<<std::endl;
 	//std::cout<<"Distance with Filter: "<<client->median_filter(2)<<std::endl;
 	//std::cout<<"Angle Two with Filter: "<<client->median_filter(3)<<std::endl;
 //	std::cout<<"Left: "<<drive_talon_left_enc->GetSelectedSensorPosition(0)<<std::endl;
 //	std::cout<<"Right: "<<drive_talon_right_enc->GetSelectedSensorPosition(0)<<std::endl;
 	std::cout<<"Yaw: "<<navx->GetYaw()<<std::endl;
+	std::cout<<"Climber Encoder: "<<climber->GetSelectedSensorPosition(0)<<std::endl;
 
 }
 
@@ -174,6 +176,7 @@ void Robot::TeleopPeriodic() {
 	if (button == 0 && pigpig == 0 && pig == 0)
 	{
 		std::cout<<"DRIVEBASE CAN RUN HERE"<<std::endl;
+		climber->Set(ControlMode::PercentOutput, joystick_zero->GetRawAxis(1));
 	}
 	//twist->auto_align();
 	//float distance = client->math(2);
